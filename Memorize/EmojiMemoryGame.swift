@@ -12,7 +12,7 @@ class EmojiMemoryGame: ObservableObject {
     private static let emojis = ["🚗","🚕","🚙","🚎","🏎","🚓", "🚑","🚒","🚐","🛻","🚚","🚛","🚜"]
     
     private static func createMemoryGame() -> MemoryGame<String> {
-        MemoryGame<String>(numberOfPairsOfCards: 5, createCardContent: { (index: Int) -> String in
+        MemoryGame<String>(numberOfPairsOfCards: 10, createCardContent: { (index: Int) -> String in
             emojis[index]
         })
     }

@@ -9,24 +9,21 @@ import SwiftUI
 
  struct EmojiMemoryCardGameView: View {
     
-    @ObservedObject var  game: EmojiMemoryGame
+    @ObservedObject var game: EmojiMemoryGame
 
     var body: some View {
-        ScrollView {
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 100))]) {
-                ForEach(game.cards) { card in
-                    if !card.isMatched {
-                        CardView(card: card).aspectRatio(2/2.5, contentMode: .fit)
-                            .onTapGesture {
-                                game.choose(card)
-                            }
-                    } else {
-                        CardView(card: card).aspectRatio(2/2.5, contentMode: .fit)
-                            .opacity(0)
-                    }
+        AspectVGrid(items: game.cards, aspectRatio: 2/3, content: { card in
+            if !card.isMatched {
+                CardView(card: card)
+                    .padding(4)
+                    .onTapGesture {
+                        game.choose(card)
                 }
-            }.padding(.top, 30)
-        }
+            } else {
+                CardView(card: card)
+                    .opacity(0)
+            }
+        })
     }
 }
 
@@ -36,14 +33,14 @@ struct CardView: View {
         GeometryReader(content: { geometry in
             ZStack {
                 let shape = RoundedRectangle(cornerRadius: DrawingConstants.cornerRadius)
-                if card.isFaceUp {
-                    shape.fill(Color.white)
-                    shape.strokeBorder(lineWidth: DrawingConstants.lineWidth)
-                    Text(card.content).font(returnFontSize(in: geometry.size))
-                } else {
-                    shape.fill(Color.pink)
-                }
-            }.padding(.all, 6)
+                    if card.isFaceUp {
+                        shape.fill(Color.white)
+                        shape.strokeBorder(lineWidth: DrawingConstants.lineWidth)
+                        Text(card.content).font(returnFontSize(in: geometry.size))
+                    } else {
+                        shape.fill(Color.pink)
+                    }
+            }
         })
     }
     
@@ -52,7 +49,7 @@ struct CardView: View {
     }
     
     private struct DrawingConstants {
-        static let cornerRadius:CGFloat = 20
+        static let cornerRadius:CGFloat = 10
         static let fontScale = 0.6
         static let lineWidth:CGFloat = 3
     }
