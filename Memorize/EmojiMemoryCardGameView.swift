@@ -12,12 +12,33 @@ import SwiftUI
     @ObservedObject var game: EmojiMemoryGame
 
     var body: some View {
-        AspectVGrid(items: game.cards, aspectRatio: 2/3, content: { card in
-            CardView(card: card)
-                .padding(4)
-                .onTapGesture { game.choose(card) }
-        })
+        VStack {
+            gameBody
+            Spacer()
+            shuffle
+        }
+            .padding()
     }
+     
+    var gameBody: some View {
+        AspectVGrid(items: game.cards, aspectRatio: 2/3, content: { card in
+             CardView(card: card)
+                 .padding(4)
+                 .onTapGesture {
+                     withAnimation(Animation.easeInOut(duration: 0.2)) {
+                         game.choose(card)
+                     }
+                 }
+         })
+    }
+     
+     var shuffle: some View {
+         Button("Shuffle") {
+             withAnimation(Animation.easeInOut(duration:0.2)) {
+                 game.shuffle()
+             }
+         }
+     }
  }
 
 struct CardView: View {
@@ -34,7 +55,8 @@ struct CardView: View {
                     .animation(Animation.linear(duration: 1).repeatForever(autoreverses: false), value: card.isMatched)
                     .font(.system(size: DrawingConstants.fontSize))
                     .scaleEffect(fontScale(thatFitsSize: geometry.size))
-            }.cardify(isFaceUp: card.isFaceUp, isMatched: card.isMatched)
+            }
+            .cardify(isFaceUp: card.isFaceUp, isMatched: card.isMatched)
         })
     }
     
