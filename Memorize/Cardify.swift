@@ -9,11 +9,9 @@ import SwiftUI
 
 struct Cardify: AnimatableModifier {
 
-    var isMatched: Bool
     var rotation: Double // degrees
     
-    init(isFaceUp: Bool, isMatched: Bool) {
-        self.isMatched = isMatched
+    init(isFaceUp: Bool) {
         rotation = isFaceUp ? 0 : 180
     }
     
@@ -31,7 +29,6 @@ struct Cardify: AnimatableModifier {
                 } else {
                     shape
                         .fill()
-                        .opacity(isMatched ? 0 : 1)
                 }
                 content
                     .opacity(rotation < 90 ? 1 : 0)
@@ -48,7 +45,7 @@ struct Cardify: AnimatableModifier {
 
 
 extension View {
-    func cardify(isFaceUp: Bool, isMatched: Bool) -> some View {
-        self.modifier(Cardify(isFaceUp: isFaceUp, isMatched: isMatched))
+    func cardify(isFaceUp: Bool) -> some View {
+        self.modifier(Cardify(isFaceUp: isFaceUp))
     }
 }

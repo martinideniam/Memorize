@@ -22,19 +22,23 @@ import SwiftUI
      
     var gameBody: some View {
         AspectVGrid(items: game.cards, aspectRatio: 2/3, content: { card in
-             CardView(card: card)
-                 .padding(4)
-                 .onTapGesture {
-                     withAnimation(Animation.easeInOut(duration: 0.2)) {
-                         game.choose(card)
-                     }
-                 }
+            if card.isMatched && !card.isFaceUp {
+                Color.clear
+            } else {
+                CardView(card: card)
+                    .padding(4)
+                    .onTapGesture {
+                        withAnimation(Animation.easeInOut) {
+                            game.choose(card)
+                        }
+                    }
+            }
          })
     }
      
      var shuffle: some View {
          Button("Shuffle") {
-             withAnimation(Animation.easeInOut(duration:0.2)) {
+             withAnimation(Animation.easeInOut(duration: 0.5)) {
                  game.shuffle()
              }
          }
@@ -56,7 +60,7 @@ struct CardView: View {
                     .font(.system(size: DrawingConstants.fontSize))
                     .scaleEffect(fontScale(thatFitsSize: geometry.size))
             }
-            .cardify(isFaceUp: card.isFaceUp, isMatched: card.isMatched)
+            .cardify(isFaceUp: card.isFaceUp)
         })
     }
     
