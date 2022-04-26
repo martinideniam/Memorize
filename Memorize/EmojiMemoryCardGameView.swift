@@ -27,6 +27,7 @@ import SwiftUI
             } else {
                 CardView(card: card)
                     .padding(4)
+                    .transition(AnyTransition.scale)
                     .onTapGesture {
                         withAnimation(Animation.easeInOut) {
                             game.choose(card)
