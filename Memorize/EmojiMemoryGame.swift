@@ -17,6 +17,10 @@ class EmojiMemoryGame: ObservableObject {
         })
     }
     
+    func createNewGame() {
+        model = EmojiMemoryGame.createMemoryGame()
+    }
+    
     @Published private(set) var model = createMemoryGame()
     
     var cards: Array<Card> {
