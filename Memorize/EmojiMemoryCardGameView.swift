@@ -10,24 +10,35 @@ import SwiftUI
  struct EmojiMemoryCardGameView: View {
     
     @ObservedObject var game: EmojiMemoryGame
-
+    @Namespace private var dealingNamespace
     var body: some View {
         VStack {
             gameBody
-            Spacer()
+            deckBoard
             shuffle
         }
             .padding()
     }
      
+     @State private var dealt = Set<Int>()
+     
+     private func deal(_ card: EmojiMemoryGame.Card) {
+         dealt.insert(card.id)
+     }
+     
+     private func isUndealt(_ card: EmojiMemoryGame.Card) -> Bool {
+         return !dealt.contains(card.id)
+     }
+     
     var gameBody: some View {
         AspectVGrid(items: game.cards, aspectRatio: 2/3, content: { card in
-            if card.isMatched && !card.isFaceUp {
+            if isUndealt(card) || (card.isMatched && !card.isFaceUp) {
                 Color.clear
             } else {
                 CardView(card: card)
+                    .matchedGeometryEffect(id: card.id, in: dealingNamespace)
                     .padding(4)
-                    .transition(AnyTransition.scale)
+                    .transition(AnyTransition.asymmetric(insertion: .scale, removal: .opacity))
                     .onTapGesture {
                         withAnimation(Animation.easeInOut) {
                             game.choose(card)
@@ -37,12 +48,41 @@ import SwiftUI
          })
     }
      
-     var shuffle: some View {
+     var deckBoard: some View {
+         ZStack {
+             ForEach(game.cards.filter{ isUndealt($0) }) { card in
+                 CardView(card: card)
+                     .matchedGeometryEffect(id: card.id, in: dealingNamespace)
+                     .transition(AnyTransition.asymmetric(insertion: .opacity, removal: .scale))
+             }
+         }
+         .frame(width: CardConstants.undealtWidth, height: CardConstants.undealtHeight)
+         .foregroundColor(CardConstants.color)
+         .onTapGesture {
+             withAnimation(.easeInOut(duration: 1)) {
+                 for card in game.cards {
+                     deal(card)
+                 }
+             }
+         }
+         .foregroundColor(CardConstants.color)
+     }
+     
+    var shuffle: some View {
          Button("Shuffle") {
              withAnimation(Animation.easeInOut(duration: 0.5)) {
                  game.shuffle()
              }
          }
+     }
+     
+     private struct CardConstants {
+         static let color = Color.black
+         static let aspectRatio: CGFloat = 2/3
+         static let dealDuration: Double = 0.5
+         static let totalDealDuration: Double = 2
+         static let undealtHeight: CGFloat = 90
+         static let undealtWidth = undealtHeight * aspectRatio
      }
  }
 
